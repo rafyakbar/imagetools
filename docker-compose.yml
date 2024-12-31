@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.9.4-management
+    container_name: imagetools_rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    networks:
+      - rabbitmq_net
+
+  rabbitmq_setup:
+    build:
+      context: ./rabbitmq_setup
+    container_name: imagetools_rabbitmq_setup
+    depends_on:
+      - rabbitmq
+    networks:
+      - rabbitmq_net
+
+  fastapi:
+    build:
+      context: ./fastapi
+    container_name: imagetools_fastapi
+    ports:
+      - 8000:8000
+    networks:
+      - rabbitmq_net
+
+networks:
+  rabbitmq_net:
+    driver: bridge
