@@ -13,10 +13,10 @@ services:
     networks:
       - rabbitmq_net
 
-  rabbitmq_setup:
+  admin:
     build:
-      context: ./rabbitmq_setup
-    container_name: imagetools_rabbitmq_setup
+      context: admin
+    container_name: imagetools_admin
     depends_on:
       - rabbitmq
     networks:
@@ -28,8 +28,14 @@ services:
     container_name: imagetools_fastapi
     ports:
       - 8000:8000
-    networks:
-      - rabbitmq_net
+    volumes:
+      - ./uploaded:/app/uploaded
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
+    depends_on:
+      - rabbitmq
 
 networks:
   rabbitmq_net:
