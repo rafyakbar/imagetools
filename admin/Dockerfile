@@ -14,4 +14,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY setup_rabbitmq.py .
 
 # Command to run the RabbitMQ setup script
-CMD ["python", "setup_rabbitmq.py"]
+#CMD ["python", "setup_rabbitmq.py"]
