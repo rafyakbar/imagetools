@@ -52,12 +52,32 @@ services:
     networks:
       - rabbitmq_net
 
-  celery_worker:
+  celery_worker_1:
     build:
       context: ./app
-    container_name: imagetools_celery_worker
-#    command: celery -A celery_tasks.celery worker -Q imagetools.extract_text_queue --loglevel=debug --hostname=imagetools_celery_worker@%h
-    command: celery -A celery_tasks.celery worker --loglevel=debug --hostname=imagetools_celery_worker@%h
+    container_name: imagetools_celery_worker_1
+    #command: celery -A celery_tasks.celery worker -Q imagetools.extract_text_queue --loglevel=debug --hostname=imagetools_worker_1@%h
+    command: celery -A celery_tasks.celery worker --loglevel=debug --hostname=imagetools_worker_1@%h
+    volumes:
+      - ./uploaded:/app/uploaded
+      - ./results:/app/results
+      - ./success:/app/success
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq_net
+
+  celery_worker_2:
+    build:
+      context: ./app
+    container_name: imagetools_celery_worker_2
+    #command: celery -A celery_tasks.celery worker -Q imagetools.extract_text_queue --loglevel=debug --hostname=imagetools_worker_2@%h
+    command: celery -A celery_tasks.celery worker --loglevel=debug --hostname=imagetools_worker_2@%h
     volumes:
       - ./uploaded:/app/uploaded
       - ./results:/app/results
