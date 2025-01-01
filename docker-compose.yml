@@ -36,6 +36,8 @@ services:
       - RABBITMQ_PASS=guest
     depends_on:
       - rabbitmq
+    networks:
+      - rabbitmq_net
 
 networks:
   rabbitmq_net:

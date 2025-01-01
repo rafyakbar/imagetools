@@ -3,12 +3,13 @@ import pika
 import os
 import uuid
 import json
-import time
 
-app = FastAPI()
+app = FastAPI(
+    title="ImageTools dengan Celery & RabbitMQ"
+)
 
 # Konfigurasi RabbitMQ
-RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')  # Mengambil dari variabel lingkungan
+RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')
 RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'guest')
 RABBITMQ_PASS = os.getenv('RABBITMQ_PASS', 'guest')
 
@@ -17,22 +18,20 @@ UPLOAD_DIR = "uploaded"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 def publish_message(routing_key, message):
+    # Membuat koneksi ke RabbitMQ
     credentials = pika.PlainCredentials(RABBITMQ_USER, RABBITMQ_PASS)
-    for attempt in range(5):  # Coba 5 kali
-        try:
-            connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST, credentials=credentials))
-            channel = connection.channel()
+    parameters = pika.ConnectionParameters(host=RABBITMQ_HOST, credentials=credentials)
+    connection = pika.BlockingConnection(parameters=parameters)
+    channel = connection.channel()
 
-            exchange_name = 'imagetools.image_processing'
-            channel.basic_publish(exchange=exchange_name, routing_key=routing_key,
-                                  body=json.dumps(message))  # Mengirim pesan dalam format JSON
+    exchange_name = 'imagetools.image_processing'
+    channel.basic_publish(
+        exchange=exchange_name,
+        routing_key=routing_key,
+        body=json.dumps(message)
+    )
 
-            connection.close()
-            return  # Jika berhasil, keluar dari fungsi
-        except Exception as e:
-            print(f"Attempt {attempt + 1}: Error publishing message: {e}")
-            time.sleep(2)  # Tunggu 2 detik sebelum mencoba lagi
-    raise Exception("Failed to connect to RabbitMQ after several attempts.")
+    connection.close()
 
 
 async def save_file(upload_dir: str, file: UploadFile):
@@ -114,7 +113,7 @@ async def extract_text(file: UploadFile = File(...)):
     message = {
         "file_location": file_location
     }
-    # publish_message('imagetools.extract', message)
+    publish_message('imagetools.extract', message)
 
     return {"message": "Text extraction started", "file_location": file_location}
 
