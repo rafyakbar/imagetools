@@ -56,7 +56,8 @@ services:
     build:
       context: ./app
     container_name: imagetools_celery_worker
-    command: celery -A celery_tasks.celery worker --loglevel=debug
+#    command: celery -A celery_tasks.celery worker -Q imagetools.extract_text_queue --loglevel=debug --hostname=imagetools_celery_worker@%h
+    command: celery -A celery_tasks.celery worker --loglevel=debug --hostname=imagetools_celery_worker@%h
     volumes:
       - ./uploaded:/app/uploaded
       - ./results:/app/results

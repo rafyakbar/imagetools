@@ -61,7 +61,13 @@ async def compress_image(file: UploadFile = File(...), compression_rate: int = F
     file_location = await save_file(compress_dir, file)
 
     # Memanggil celery task untuk mengompres gambar
-    compress_image_task.delay(file_location, compression_rate)
+    # compress_image_task.delay(file_location, compression_rate)
+
+    # Memanggil celery task untuk mengompres gambar menggunakan apply_async
+    compress_image_task.apply_async(
+        args=[file_location, compression_rate],
+        routing_key='imagetools.compress'
+    )
 
     return {
         "message": "Task execution started",
@@ -86,7 +92,13 @@ async def upscale_image(file: UploadFile = File(...), scale_factor: float = Form
     file_location = await save_file(upscale_dir, file)
 
     # Memanggil celery task untuk mengubah ukuran gambar
-    upscale_image_task.delay(file_location, scale_factor)
+    # upscale_image_task.delay(file_location, scale_factor)
+
+    # Memanggil celery task untuk mengubah ukuran gambar menggunakan apply_async
+    upscale_image_task.apply_async(
+        args=[file_location, scale_factor],
+        routing_key='imagetools.upscale'
+    )
 
     return {
         "message": "Task execution started",
@@ -106,8 +118,11 @@ async def extract_text(file: UploadFile = File(...)):
     # Simpan file di dalam folder extract_text_service
     file_location = await save_file(extract_text_dir, file)
 
-    # Memanggil celery task untuk mengekstrak teks
-    extract_text_task.delay(file_location)
+    # Memanggil celery task untuk mengekstrak teks menggunakan apply_async
+    extract_text_task.apply_async(
+        args=[file_location],
+        routing_key='imagetools.extract'
+    )
 
     return {
         "message": "Task execution started",

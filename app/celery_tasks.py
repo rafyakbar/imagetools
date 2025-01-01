@@ -3,6 +3,7 @@ import os
 import json
 from PIL import Image
 import pytesseract
+from kombu import Exchange, Queue
 
 RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')
 RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'guest')
@@ -14,6 +15,48 @@ celery = Celery(
     backend='rpc://'
 )
 
+# CUSTOM BINDING (ROUTE)
+# referensi https://docs.celeryq.dev/en/latest/userguide/routing.html
+
+# Definisikan queues dengan routing keys
+queue_routing_keys = {
+    'imagetools.compress_image_queue': 'imagetools.compress',
+    'imagetools.upscale_image_queue': 'imagetools.upscale',
+    'imagetools.extract_text_queue': 'imagetools.extract'
+}
+
+# Definisikan exchange
+exchange_name = 'imagetools.image_processing'
+image_processing_exchange = Exchange(exchange_name, type='topic')
+
+celery.conf.task_default_queue = 'default'
+celery.conf.task_default_exchange = exchange_name
+
+# Buat queues
+celery.conf.task_queues = (
+    Queue(
+        name='imagetools.compress_image_queue',
+        exchange=image_processing_exchange,
+        routing_key=queue_routing_keys['imagetools.compress_image_queue']
+    ),
+    Queue(
+        name='imagetools.upscale_image_queue',
+        exchange=image_processing_exchange,
+        routing_key=queue_routing_keys['imagetools.upscale_image_queue']
+    ),
+    Queue(
+        name='imagetools.extract_text_queue',
+        exchange=image_processing_exchange,
+        routing_key=queue_routing_keys['imagetools.extract_text_queue']
+    ),
+)
+
+# Konfigurasi routing
+celery.conf.task_routes = {
+    'compress_image_task': {'queue': 'imagetools.compress_image_queue'},
+    'upscale_image_task': {'queue': 'imagetools.upscale_image_queue'},
+    'extract_text_task': 'imagetools.extract_text_queue',
+}
 
 @celery.task(name='compress_image_task')
 def compress_image_task(file_location, compression_rate):
@@ -123,7 +166,7 @@ def upscale_image_task(file_location, scale_factor):
         print(f"Terjadi kesalahan saat mengubah ukuran gambar: {e}")
         return None
 
-@celery.task(name='extract_text_task')
+@celery.task(name='extract_text_task', queue='imagetools.extract_text_queue')
 def extract_text_task(file_location):
     """
     Mengekstrak teks dari gambar berdasarkan lokasi file yang diberikan.
