@@ -1,0 +1,1 @@
+# Folder untuk hasil data semua layanan

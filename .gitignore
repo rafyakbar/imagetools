@@ -4,3 +4,10 @@ uploaded/extract_service/*
 !uploaded/extract_service/README.md
 uploaded/compress_service/*
 !uploaded/compress_service/README.md
+results/*
+!results/compress_service/README.md
+!results/upscale_service/README.md
+uploaded/extract_text_service/*
+uploaded/upscale_service/*
+success/*
+!success/README.md

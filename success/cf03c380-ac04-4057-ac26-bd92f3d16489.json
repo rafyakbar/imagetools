@@ -1,1 +1,0 @@
-{"service": "compress", "parameters": {"file_location": "uploaded/compress_service/cf03c380-ac04-4057-ac26-bd92f3d16489.jpg", "compression_rate": 15}, "result": {"quality": 15, "before": "uploaded/compress_service/cf03c380-ac04-4057-ac26-bd92f3d16489.jpg", "after": "results/compress_service/cf03c380-ac04-4057-ac26-bd92f3d16489.jpg"}}

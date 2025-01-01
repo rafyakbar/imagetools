@@ -22,6 +22,13 @@ services:
     container_name: imagetools_admin
     depends_on:
       - rabbitmq
+    ports:
+      - 5000:5000
+    volumes:
+      - ./uploaded:/app/uploaded
+      - ./uploaded:/app/static/uploaded
+      - ./results:/app/static/results
+      - ./success:/app/static/success
     networks:
       - rabbitmq_net
 
@@ -35,6 +42,7 @@ services:
       - ./uploaded:/app/uploaded
       - ./results:/app/results
       - ./success:/app/success
+      - ./samples:/app/samples
     environment:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_USER=guest
