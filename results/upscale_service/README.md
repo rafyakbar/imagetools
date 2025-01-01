@@ -1,0 +1,1 @@
+# Folder result untuk layanan "Upscale Image"

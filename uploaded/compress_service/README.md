@@ -1,0 +1,1 @@
+# Folder upload untuk layanan "Compress Image"

@@ -1,3 +1,6 @@
 .idea
-uploaded
 .ipynb_checkpoints
+uploaded/extract_service/*
+!uploaded/extract_service/README.md
+uploaded/compress_service/*
+!uploaded/compress_service/README.md
