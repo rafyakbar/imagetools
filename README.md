@@ -46,53 +46,31 @@ Dilakukan beberapa percobaan dengan mengukur waktu eksekusi yang dibutuhkan di s
    - Upscale Image: 2 worker
    - Extract Text: 2 worker
 
-   **Total worker yang dialokasikan**: 
-   $$
-   2 + 2 + 2 = 6 \text{ worker}
-   $$
+   **Total worker yang dialokasikan**: 2 + 2 + 2 = 6
 
 2. **Sisa worker**: 
-   $$
-   \text{Sisa Worker} = 10 - 6 = 4 \text{ worker}
-   $$
+
+   Sisa Worker = 10 - 6 = 4 worker
 
 3. **Hitung proporsi untuk sisa worker**:
    - Total waktu eksekusi: 
-   $$
-   0.015 + 0.065 + 0.385 = 0.465 \text{ detik}
-   $$
+
+     - 0.015 + 0.065 + 0.385 = 0.465 detik
+
    - Hitung proporsi berdasarkan waktu eksekusi:
-     - Compress Image: 
-     $$
-     \frac{0.015}{0.465} \approx 0.0322
-     $$
-     - Upscale Image: 
-     $$
-     \frac{0.065}{0.465} \approx 0.1398
-     $$
-     - Extract Text: 
-     $$
-     \frac{0.385}{0.465} \approx 0.8280
-     $$
+     - Compress Image: 0.015 / 0.465 = 0.0322
+     - Upscale Image: 0.065 / 0.465 = 0.1398
+     - Extract Text: 0.385 / 0.465 = 0.8280
 
 4. **Alokasi sisa worker**:
-   - Total proporsi: 
-   $$
-   0.0322 + 0.1398 + 0.8280 = 1
-   $$
+   - Total proporsi: 0.0322 + 0.1398 + 0.8280 = 1
    - Alokasikan sisa worker (4 worker) berdasarkan proporsi:
-     - Compress Image: 
-     $$
-     4 \times 0.0322 \approx 0.1288 \quad (\text{dibulatkan menjadi } 0)
-     $$
-     - Upscale Image: 
-     $$
-     4 \times 0.1398 \approx 0.5592 \quad (\text{dibulatkan menjadi } 1)
-     $$
-     - Extract Text: 
-     $$
-     4 \times 0.8280 \approx 3.3120 \quad (\text{dibulatkan menjadi } 3)
-     $$
+     - Compress Image:
+       - 4 * 0.0322 = 0.1288 (dibulatkan menjadi 0)
+     - Upscale Image:
+       - 4 * 0.1398 = 0.5592 (dibulatkan menjadi 1)
+     - Extract Text:
+       - 4 * 0.8280 = 3.3120 (dibulatkan menjadi 3)
 
 ### Pembagian Worker Akhir
 - **Compress Image**: 2 worker
