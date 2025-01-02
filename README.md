@@ -86,14 +86,22 @@ Dilakukan beberapa percobaan dengan mengukur waktu eksekusi yang dibutuhkan di s
 
 2. **Poin 4: Mendefinisikan jenis pekerjaan untuk tiap antrian.**
    - Jenis pekerjaan yang tersedia telah didefinisikan secara hardcoded, termasuk kompresi gambar, peningkatan resolusi, dan ekstraksi teks yang dikemas dalam FastAPI.
+   - Dapat diakses pada http://localhost:8000/docs
+   - ![ss_fastapi.png](ss_fastapi.png)
 
 3. **Poin 5: Menjalankan/eksekusi proses komputasi.**
    - Celery telah digunakan untuk mengeksekusi pekerjaan secara asinkron berdasarkan antrian yang ada.
 
 4. **Poin 6: Memantau status pekerjaan dalam antrian.**
    - Status pekerjaan dapat dipantau menggunakan Flower, yang dapat melihat seluruh status pekerjaan yang pernah masuk dalam antrian.
+   - Dapat diakses pada http://localhost:5555/
+   - ![ss_flower.png](ss_flower.png)
+   - ![ss_flower_detail.png](ss_flower_detail.png)
 
 5. **Poin 7: Melihat hasil pekerjaan yang sukses dijalankan.**
    - Hasil pekerjaan yang berhasil dapat diakses melalui antarmuka web yang dibangun dengan Flask, memungkinkan untuk melihat pekerjaan yang sukses.
+   - Dapat diakses pada http://localhost:5000/
+   - ![ss_flask.png](ss_flask.png)
+   - ![ss_flask_detail.png](ss_flask_detail.png)
 
 Itu semua dilakukan dengan moda komunikasi message queue dengan custom alokasi worker dan juga custom untuk RabbitMQ exchange, queue, dan binding (route) menggunakan Kombu Celery.
