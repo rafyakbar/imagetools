@@ -52,12 +52,12 @@ services:
     networks:
       - rabbitmq_net
 
-  celery_worker_1:
+  compress_worker_1:
     build:
       context: ./app
-    container_name: imagetools_celery_worker_1
-    #command: celery -A celery_tasks.celery worker -Q imagetools.extract_text_queue --loglevel=debug --hostname=imagetools_worker_1@%h
-    command: celery -A celery_tasks.celery worker --loglevel=debug --hostname=imagetools_worker_1@%h
+    container_name: imagetools_compress_worker_1
+    command: celery -A celery_tasks.celery worker -Q imagetools.compress_image_queue --loglevel=debug --hostname=compress_worker_1@%h
+#    command: celery -A celery_tasks.celery worker --loglevel=debug --hostname=imagetools_worker_1@%h
     volumes:
       - ./uploaded:/app/uploaded
       - ./results:/app/results
@@ -72,12 +72,163 @@ services:
     networks:
       - rabbitmq_net
 
-  celery_worker_2:
+  compress_worker_2:
     build:
       context: ./app
-    container_name: imagetools_celery_worker_2
-    #command: celery -A celery_tasks.celery worker -Q imagetools.extract_text_queue --loglevel=debug --hostname=imagetools_worker_2@%h
-    command: celery -A celery_tasks.celery worker --loglevel=debug --hostname=imagetools_worker_2@%h
+    container_name: imagetools_compress_worker_2
+    command: celery -A celery_tasks.celery worker -Q imagetools.compress_image_queue --loglevel=debug --hostname=compress_worker_2@%h
+    volumes:
+      - ./uploaded:/app/uploaded
+      - ./results:/app/results
+      - ./success:/app/success
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq_net
+
+  upscale_worker_1:
+    build:
+      context: ./app
+    container_name: imagetools_upscale_worker_1
+    command: celery -A celery_tasks.celery worker -Q imagetools.upscale_image_queue --loglevel=debug --hostname=upscale_worker_1@%h
+    volumes:
+      - ./uploaded:/app/uploaded
+      - ./results:/app/results
+      - ./success:/app/success
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq_net
+
+  upscale_worker_2:
+    build:
+      context: ./app
+    container_name: imagetools_upscale_worker_2
+    command: celery -A celery_tasks.celery worker -Q imagetools.upscale_image_queue --loglevel=debug --hostname=upscale_worker_2@%h
+    volumes:
+      - ./uploaded:/app/uploaded
+      - ./results:/app/results
+      - ./success:/app/success
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq_net
+
+  upscale_worker_3:
+    build:
+      context: ./app
+    container_name: imagetools_upscale_worker_3
+    command: celery -A celery_tasks.celery worker -Q imagetools.upscale_image_queue --loglevel=debug --hostname=upscale_worker_3@%h
+    volumes:
+      - ./uploaded:/app/uploaded
+      - ./results:/app/results
+      - ./success:/app/success
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq_net
+
+  extract_worker_1:
+    build:
+      context: ./app
+    container_name: imagetools_extract_worker_1
+    command: celery -A celery_tasks.celery worker -Q imagetools.extract_text_queue --loglevel=debug --hostname=extract_worker_1@%h
+    volumes:
+      - ./uploaded:/app/uploaded
+      - ./results:/app/results
+      - ./success:/app/success
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq_net
+
+  extract_worker_2:
+    build:
+      context: ./app
+    container_name: imagetools_extract_worker_2
+    command: celery -A celery_tasks.celery worker -Q imagetools.extract_text_queue --loglevel=debug --hostname=extract_worker_2@%h
+    volumes:
+      - ./uploaded:/app/uploaded
+      - ./results:/app/results
+      - ./success:/app/success
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq_net
+
+  extract_worker_3:
+    build:
+      context: ./app
+    container_name: imagetools_extract_worker_3
+    command: celery -A celery_tasks.celery worker -Q imagetools.extract_text_queue --loglevel=debug --hostname=extract_worker_3@%h
+    volumes:
+      - ./uploaded:/app/uploaded
+      - ./results:/app/results
+      - ./success:/app/success
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq_net
+
+  extract_worker_4:
+    build:
+      context: ./app
+    container_name: imagetools_extract_worker_4
+    command: celery -A celery_tasks.celery worker -Q imagetools.extract_text_queue --loglevel=debug --hostname=extract_worker_4@%h
+    volumes:
+      - ./uploaded:/app/uploaded
+      - ./results:/app/results
+      - ./success:/app/success
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - rabbitmq_net
+
+  extract_worker_5:
+    build:
+      context: ./app
+    container_name: imagetools_extract_worker_5
+    command: celery -A celery_tasks.celery worker -Q imagetools.extract_text_queue --loglevel=debug --hostname=extract_worker_5@%h
     volumes:
       - ./uploaded:/app/uploaded
       - ./results:/app/results
