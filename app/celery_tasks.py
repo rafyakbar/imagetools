@@ -53,7 +53,7 @@ celery.conf.task_queues = (
 celery.conf.task_routes = {
     'compress_image_task': {'queue': 'imagetools.compress_image_queue'},
     'upscale_image_task': {'queue': 'imagetools.upscale_image_queue'},
-    'extract_text_task': 'imagetools.extract_text_queue',
+    'extract_text_task': {'queue': 'imagetools.extract_text_queue'},
 }
 
 @celery.task(name='compress_image_task')

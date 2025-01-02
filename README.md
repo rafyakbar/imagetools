@@ -94,7 +94,7 @@ Dilakukan beberapa percobaan dengan mengukur waktu eksekusi yang dibutuhkan di s
 
 4. **Poin 6: Memantau status pekerjaan dalam antrian.**
    - Status pekerjaan dapat dipantau menggunakan Flower, yang dapat melihat seluruh status pekerjaan yang pernah masuk dalam antrian.
-   - Dapat diakses pada http://localhost:5555/
+   - Dapat diakses pada http://localhost:5555/ dan untuk RabbitMQ management dapat diakses di http://localhost:15672/
    - ![ss_flower.png](ss_flower.png)
    - ![ss_flower_detail.png](ss_flower_detail.png)
 
