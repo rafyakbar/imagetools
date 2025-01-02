@@ -60,9 +60,6 @@ async def compress_image(file: UploadFile = File(...), compression_rate: int = F
     # Simpan file di dalam folder compress_service
     file_location = await save_file(compress_dir, file)
 
-    # Memanggil celery task untuk mengompres gambar
-    # compress_image_task.delay(file_location, compression_rate)
-
     # Memanggil celery task untuk mengompres gambar menggunakan apply_async
     compress_image_task.apply_async(
         args=[file_location, compression_rate],
@@ -91,9 +88,6 @@ async def upscale_image(file: UploadFile = File(...), scale_factor: float = Form
     # Simpan file di dalam folder upscale_service
     file_location = await save_file(upscale_dir, file)
 
-    # Memanggil celery task untuk mengubah ukuran gambar
-    # upscale_image_task.delay(file_location, scale_factor)
-
     # Memanggil celery task untuk mengubah ukuran gambar menggunakan apply_async
     upscale_image_task.apply_async(
         args=[file_location, scale_factor],
@@ -112,7 +106,7 @@ async def extract_text(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="File must be an image.")
 
     # Membuat direktori untuk extract_text_service jika belum ada
-    extract_text_dir = os.path.join(UPLOAD_DIR, "extract_text_service")
+    extract_text_dir = os.path.join(UPLOAD_DIR, "extract_service")
     os.makedirs(extract_text_dir, exist_ok=True)
 
     # Simpan file di dalam folder extract_text_service

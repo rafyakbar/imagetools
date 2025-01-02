@@ -4,6 +4,7 @@ import json
 from PIL import Image
 import pytesseract
 from kombu import Exchange, Queue
+import time
 
 RABBITMQ_HOST = os.getenv('RABBITMQ_HOST', 'rabbitmq')
 RABBITMQ_USER = os.getenv('RABBITMQ_USER', 'guest')
@@ -18,7 +19,7 @@ celery = Celery(
 # CUSTOM BINDING (ROUTE)
 # referensi https://docs.celeryq.dev/en/latest/userguide/routing.html
 
-# Definisikan queues dengan routing keys
+# Queues dengan routing keys
 queue_routing_keys = {
     'imagetools.compress_image_queue': 'imagetools.compress',
     'imagetools.upscale_image_queue': 'imagetools.upscale',
@@ -29,10 +30,7 @@ queue_routing_keys = {
 exchange_name = 'imagetools.image_processing'
 image_processing_exchange = Exchange(exchange_name, type='topic')
 
-celery.conf.task_default_queue = 'default'
-celery.conf.task_default_exchange = exchange_name
-
-# Buat queues
+# Buat custom queues
 celery.conf.task_queues = (
     Queue(
         name='imagetools.compress_image_queue',
@@ -67,17 +65,20 @@ def compress_image_task(file_location, compression_rate):
     :param compression_rate: Tingkat kompresi (0-100), di mana 100 adalah kualitas tertinggi.
     """
     try:
+        start_time = time.time()  # Waktu mulai eksekusi
+
         # Membuka gambar
         with Image.open(file_location) as img:
             # Menghitung kualitas kompresi dan memastikan nilai antara 1 dan 100
             quality = max(1, min(100, compression_rate))
 
-            # Menyimpan gambar yang telah dikompres
+            # Menyimpan gambar yang telah dikompres & membuat folder jika belum ada
             output_dir = "results/compress_service"
-            os.makedirs(output_dir, exist_ok=True)  # Membuat direktori jika belum ada
+            os.makedirs(output_dir, exist_ok=True)
 
             basename = os.path.splitext(os.path.basename(file_location))[0]
 
+            # Simpan gambar hasil kompresi
             compressed_file_location = os.path.join(
                 output_dir,
                 f"{basename}.jpg"
@@ -86,9 +87,11 @@ def compress_image_task(file_location, compression_rate):
 
             print(f"Gambar berhasil dikompres dan disimpan di: {compressed_file_location}")
 
-            # Membuat file JSON dengan hasil kompresi
+            # Membuat data file JSON
             result_json_path = os.path.join("success", f"{basename}.json")
+            execution_time = time.time() - start_time
             result_data = {
+                "execution_time": f"{execution_time:.6f} detik",
                 "service": "compress",
                 "parameters": {
                     'file_location': file_location,
@@ -105,7 +108,7 @@ def compress_image_task(file_location, compression_rate):
             with open(result_json_path, "w") as json_file:
                 json.dump(result_data, json_file)
 
-            print(f"File JSON hasil kompresi disimpan di: {result_json_path}")
+            print(f"File JSON disimpan di: {result_json_path}")
             return compressed_file_location
     except Exception as e:
         print(f"Terjadi kesalahan saat mengompres gambar: {e}")
@@ -114,12 +117,14 @@ def compress_image_task(file_location, compression_rate):
 @celery.task(name='upscale_image_task')
 def upscale_image_task(file_location, scale_factor):
     """
-    Mengubah ukuran gambar berdasarkan lokasi file dan faktor skala yang diberikan.
+    Mengubah ukuran gambar berdasarkan lokasi file dan skala yang diberikan.
 
     :param file_location: Lokasi file gambar yang akan diubah ukurannya.
-    :param scale_factor: Faktor skala untuk mengubah ukuran gambar.
+    :param scale_factor: Skala untuk mengubah ukuran gambar.
     """
     try:
+        start_time = time.time()  # Waktu mulai eksekusi
+
         # Membuka gambar
         with Image.open(file_location) as img:
             # Menghitung ukuran baru
@@ -128,12 +133,13 @@ def upscale_image_task(file_location, scale_factor):
             # Mengubah ukuran gambar
             upscaled_image = img.resize(new_size, Image.LANCZOS)
 
-            # Menyimpan gambar yang telah diubah ukurannya
+            # Menyimpan gambar yang telah diubah ukurannya & membuat direktori jika belum ada
             output_dir = "results/upscale_service"
-            os.makedirs(output_dir, exist_ok=True)  # Membuat direktori jika belum ada
+            os.makedirs(output_dir, exist_ok=True)
 
             basename = os.path.splitext(os.path.basename(file_location))[0]
 
+            # Simpan hasil upscale gambar
             upscaled_file_location = os.path.join(
                 output_dir,
                 f"{basename}.jpg"
@@ -142,9 +148,11 @@ def upscale_image_task(file_location, scale_factor):
 
             print(f"Gambar berhasil diubah ukurannya dan disimpan di: {upscaled_file_location}")
 
-            # Membuat file JSON dengan hasil upscale
+            # Membuat file JSON
             result_json_path = os.path.join("success", f"{basename}.json")
+            execution_time = time.time() - start_time
             result_data = {
+                "execution_time": f"{execution_time:.6f} detik",
                 "service": "upscale",
                 "parameters": {
                     'file_location': file_location,
@@ -160,7 +168,7 @@ def upscale_image_task(file_location, scale_factor):
             with open(result_json_path, "w") as json_file:
                 json.dump(result_data, json_file)
 
-            print(f"File JSON hasil upscale disimpan di: {result_json_path}")
+            print(f"File JSON disimpan di: {result_json_path}")
             return upscaled_file_location
     except Exception as e:
         print(f"Terjadi kesalahan saat mengubah ukuran gambar: {e}")
@@ -174,6 +182,8 @@ def extract_text_task(file_location):
     :param file_location: Lokasi file gambar yang akan diekstrak teksnya.
     """
     try:
+        start_time = time.time()  # Waktu mulai eksekusi
+
         # Membuka gambar
         with Image.open(file_location) as img:
             # Menggunakan pytesseract untuk mengekstrak teks
@@ -183,7 +193,9 @@ def extract_text_task(file_location):
 
             # Membuat file JSON dengan hasil ekstraksi
             result_json_path = os.path.join("success", f"{basename}.json")
+            execution_time = time.time() - start_time
             result_data = {
+                "execution_time": f"{execution_time:.6f} detik",
                 "service": "extract_text",
                 "parameters": {
                     'file_location': file_location

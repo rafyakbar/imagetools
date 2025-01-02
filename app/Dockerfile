@@ -1,23 +1,23 @@
-# Use an official Python runtime as a parent image
+# Menggunakan image Python official
 FROM python:3.10-slim
 
 # Install Tesseract OCR
 RUN apt-get update && apt-get install -y tesseract-ocr
 
-# Set working directory
+# Set working dir
 WORKDIR /app
 
-# Copy requirements file
+# Copy file requirements
 COPY requirements.txt .
 
-# Install dependencies
+# Menginstal dependensi yang terdaftar di requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the FastAPI application code
+# Copy semua file kode aplikasi ke dalam image
 COPY . .
 
-# Expose the port that FastAPI will run on
+# Expose port FastAPI
 EXPOSE 8000
 
-# Command to run the FastAPI application using Uvicorn
+# Command untuk menjalankan FastAPI menggunakan Uvicorn
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

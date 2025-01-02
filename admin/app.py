@@ -1,12 +1,11 @@
 from flask import Flask, render_template
 import os
 import json
-from datetime import datetime
 
 app = Flask(__name__)
 
-# Path ke folder success
-SUCCESS_DIR = 'static/success'  # Sesuaikan dengan path yang benar di dalam container
+# Folder success
+SUCCESS_DIR = 'static/success'
 
 
 @app.route('/')
@@ -14,12 +13,17 @@ def index():
     results = []
 
     try:
+        # List file
         files = os.listdir(SUCCESS_DIR)
+
+        # Urutkan file secara descending agar file terbaru berada di atas
         files.sort(reverse=True)
         for file in files:
+            # Filter file yang hanya json
             if file.endswith('.json'):
                 with open(os.path.join(SUCCESS_DIR, file), 'r') as f:
                     data = json.load(f)
+
                     # Ekstrak informasi
                     uuid = file.split('_')[-1].split('.')[0]
                     datetime_str = file.split('_')[0] + ' ' + file.split('_')[1]
@@ -31,7 +35,8 @@ def index():
                         'datetime': datetime_str,
                         'service': data['service'].upper(),
                         'input': input_image,
-                        'output': output
+                        'output': output,
+                        'raw': json.dumps(data, indent=4)
                     })
     except FileNotFoundError:
         pass
